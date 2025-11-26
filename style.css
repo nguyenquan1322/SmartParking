@@ -1,0 +1,133 @@
+body {
+  margin: 0;
+  background: #eef2f3;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  width: 100%;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+  width: 350px;
+  text-align: center;
+}
+
+.subtitle {
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+input {
+  width: 85%;
+  padding: 12px;
+  margin: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.btn-primary {
+  width: 90%;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  width: 90%;
+  padding: 12px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+  opacity: 0.9;
+}
+
+.message {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+}
+
+#app {
+  width: 100%;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-info {
+  font-size: 18px;
+}
+
+.btn-logout {
+  padding: 8px 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.slots-container {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+}
+
+.slot-card {
+  background: white;
+  width: 200px;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.slot-card:hover {
+  transform: translateY(-5px);
+}
+
+.status {
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.timer {
+  font-size: 15px;
+  color: #444;
+  margin-top: 5px;
+}
+
+/* COLOR STATES */
+.empty { background: #28a745 !important; color: white; }
+.booked { background: #ffc107 !important; }
+.occupied { background: #dc3545 !important; color: white; }

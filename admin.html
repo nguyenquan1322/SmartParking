@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – Quản lý thẻ RFID</title>
+  <link rel="stylesheet" href="admin.css">
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+
+<body>
+
+<div class="topbar">
+  <span>🔐 Admin – Quản lý thẻ RFID</span>
+  <button class="logout-btn" onclick="logout()">Đăng xuất</button>
+</div>
+
+<div class="container">
+  
+  <!-- Đăng ký thẻ mới -->
+  <div class="card">
+    <h2>📝 Đăng ký thẻ RFID mới</h2>
+    
+    <p style="color: #666; margin-bottom: 20px;">
+      Nhấn nút bên dưới để bắt đầu quá trình đăng ký thẻ.<br>
+      ESP32 sẽ bật chế độ đọc thẻ, sau đó quẹt thẻ RFID vào đầu đọc.
+    </p>
+
+    <button class="btn-register" onclick="startCardRegistration()">
+      🎯 Bắt đầu đăng ký thẻ
+    </button>
+
+    <div id="registrationStatus" class="status-box"></div>
+  </div>
+
+  <!-- Quản lý booking -->
+  <div class="card">
+    <h2>🅿️ Quản lý đặt chỗ</h2>
+    
+    <div id="bookingsList" class="bookings-list">
+      <!-- Danh sách booking sẽ được load động -->
+    </div>
+  </div>
+
+  <!-- Lịch sử ra/vào -->
+  <div class="card">
+    <h2>📊 Lịch sử ra/vào bãi</h2>
+    
+    <div class="filter-box">
+      <select id="filterType" onchange="filterLogs()">
+        <option value="all">Tất cả</option>
+        <option value="entry">Chỉ vào</option>
+        <option value="exit">Chỉ ra</option>
+      </select>
+      <input id="searchLog" type="text" placeholder="🔍 Tìm theo ID thẻ..." onkeyup="filterLogs()">
+    </div>
+
+    <div id="accessLogs" class="access-logs">
+      <!-- Log sẽ được load động -->
+    </div>
+  </div>
+
+  <!-- Danh sách thẻ đã đăng ký -->
+  <div class="card">
+    <h2>📋 Danh sách thẻ đã đăng ký</h2>
+    
+    <div class="search-box">
+      <input id="searchCard" type="text" placeholder="🔍 Tìm kiếm theo ID thẻ..." onkeyup="filterCards()">
+    </div>
+
+    <div id="cardsList" class="cards-list">
+      <!-- Danh sách sẽ được load động -->
+    </div>
+  </div>
+
+</div>
+
+<script src="firebase-config.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
+

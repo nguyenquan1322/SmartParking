@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login – Parking IoT</title>
+  <link rel="stylesheet" href="auth.css">
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+
+<body>
+
+<div class="auth-card">
+  <h2>🚗 Smart Parking</h2>
+  <p>Đăng nhập vào hệ thống</p>
+
+  <div class="input-group">
+    <input id="username" placeholder="Tên người dùng" autocomplete="username">
+  </div>
+
+  <div class="input-group">
+    <input id="password" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+  </div>
+
+  <button class="btn-primary" onclick="login()">Đăng nhập</button>
+
+  <p id="authMsg" class="msg"></p>
+
+  <p class="switch">Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a></p>
+</div>
+
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script>
+// Kiểm tra nếu đã đăng nhập thì chuyển đến trang tương ứng
+(function checkLogin() {
+  let currentUser = localStorage.getItem("currentUser");
+  if (currentUser) {
+    if (currentUser === "admin") {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "dashboard.html";
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard – Parking IoT</title>
+  <link rel="stylesheet" href="dashboard.css">
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="logo">🏢 Smart Parking System</span>
+    <span class="subtitle">Hệ thống quản lý bãi đỗ xe thông minh</span>
+  </div>
+  <div class="topbar-right">
+    <div class="stats">
+      <div class="stat-item available">
+        <span class="stat-num" id="availableCount">0</span>
+        <span class="stat-label">Chỗ trống</span>
+      </div>
+      <div class="stat-item occupied">
+        <span class="stat-num" id="occupiedCount">0</span>
+        <span class="stat-label">Đang đỗ</span>
+      </div>
+      <div class="stat-item booked">
+        <span class="stat-num" id="bookedCount">0</span>
+        <span class="stat-label">Đã đặt</span>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Đăng xuất</button>
+  </div>
+</div>
+
+<div class="parking-lot-container">
+  <div class="parking-lot">
+    
+    <!-- Entrance/Exit -->
+    <div class="entrance">
+      <div class="barrier-gate">
+        <div class="gate-sign">⬇️ ENTRANCE</div>
+        <div class="barrier-line"></div>
+      </div>
+    </div>
+
+    <!-- Road -->
+    <div class="main-road">
+      <div class="road-marking"></div>
+    </div>
+
+    <!-- Left Side Parking Slots -->
+    <div class="parking-row left-row">
+      <div class="parking-slot empty" id="Slot01Box" onclick="openBooking('Slot01')">
+        <div class="slot-number">A1</div>
+        <div class="car-shape" id="Slot01Car">
+          <div class="car-front"></div>
+          <div class="car-body"></div>
+          <div class="car-back"></div>
+        </div>
+        <div class="slot-info">
+          <div id="Slot01Status" class="slot-status">TRỐNG</div>
+          <div id="Slot01Timer" class="slot-timer"></div>
+        </div>
+      </div>
+
+      <div class="parking-slot empty" id="Slot02Box" onclick="openBooking('Slot02')">
+        <div class="slot-number">A2</div>
+        <div class="car-shape" id="Slot02Car">
+          <div class="car-front"></div>
+          <div class="car-body"></div>
+          <div class="car-back"></div>
+        </div>
+        <div class="slot-info">
+          <div id="Slot02Status" class="slot-status">TRỐNG</div>
+          <div id="Slot02Timer" class="slot-timer"></div>
+        </div>
+      </div>
+
+      <div class="parking-slot empty" id="Slot03Box" onclick="openBooking('Slot03')">
+        <div class="slot-number">A3</div>
+        <div class="car-shape" id="Slot03Car">
+          <div class="car-front"></div>
+          <div class="car-body"></div>
+          <div class="car-back"></div>
+        </div>
+        <div class="slot-info">
+          <div id="Slot03Status" class="slot-status">TRỐNG</div>
+          <div id="Slot03Timer" class="slot-timer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side Parking Slots -->
+    <div class="parking-row right-row">
+      <div class="parking-slot empty disabled">
+        <div class="slot-number">B1</div>
+        <div class="car-shape">
+          <div class="car-front"></div>
+          <div class="car-body"></div>
+          <div class="car-back"></div>
+        </div>
+        <div class="slot-info">
+          <div class="slot-status">COMING SOON</div>
+        </div>
+      </div>
+
+      <div class="parking-slot empty disabled">
+        <div class="slot-number">B2</div>
+        <div class="car-shape">
+          <div class="car-front"></div>
+          <div class="car-body"></div>
+          <div class="car-back"></div>
+        </div>
+        <div class="slot-info">
+          <div class="slot-status">COMING SOON</div>
+        </div>
+      </div>
+
+      <div class="parking-slot empty disabled">
+        <div class="slot-number">B3</div>
+        <div class="car-shape">
+          <div class="car-front"></div>
+          <div class="car-body"></div>
+          <div class="car-back"></div>
+        </div>
+        <div class="slot-info">
+          <div class="slot-status">COMING SOON</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exit -->
+    <div class="exit">
+      <div class="barrier-gate">
+        <div class="barrier-line"></div>
+        <div class="gate-sign">⬆️ EXIT</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- POPUP -->
+<div id="bookDialog" class="dialog">
+  <h3>Đặt chỗ đậu xe</h3>
+  <p>Chọn ngày và giờ đặt chỗ đến</p>
+
+  <div class="datetime-picker">
+    <div class="input-row">
+      <div class="input-col">
+        <label>Ngày:</label>
+        <input type="date" id="bookDate">
+      </div>
+      <div class="input-col">
+        <label>Giờ:</label>
+        <input type="time" id="bookTime" value="12:00">
+      </div>
+    </div>
+  </div>
+
+  <div class="booking-info">
+    <span id="bookingDuration"></span>
+  </div>
+
+  <div class="dialog-buttons">
+    <button class="btn-confirm" onclick="confirmBooking()">Xác nhận</button>
+    <button class="btn-cancel" onclick="closeDialog()">Hủy</button>
+  </div>
+</div>
+
+<script src="firebase-config.js"></script>
+<script src="dashboard.js"></script>
+
+</body>
+</html>

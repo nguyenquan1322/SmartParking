@@ -1,0 +1,806 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+}
+
+/* ========== TOPBAR ========== */
+.topbar {
+  padding: 20px 40px;
+  background: rgba(255, 255, 255, 0.98);
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 12px;
+  min-width: 80px;
+}
+
+.stat-item.available {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-item.occupied {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+
+.stat-item.booked {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 12px 24px;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* ========== PARKING LOT ========== */
+.parking-lot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  min-height: calc(100vh - 100px);
+}
+
+.parking-lot {
+  background: #2c3e50;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* ========== ENTRANCE/EXIT ========== */
+.entrance,
+.exit {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.exit {
+  margin-top: 30px;
+  margin-bottom: 0;
+}
+
+.barrier-gate {
+  background: #34495e;
+  border: 4px solid #f39c12;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  position: relative;
+}
+
+.gate-sign {
+  color: #f39c12;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 10px rgba(243, 156, 18, 0.5);
+}
+
+.barrier-line {
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    #e74c3c 0px,
+    #e74c3c 30px,
+    white 30px,
+    white 60px
+  );
+  margin-top: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ========== ROAD ========== */
+.main-road {
+  width: 100%;
+  height: 60px;
+  background: #1a252f;
+  position: relative;
+  margin: 20px 0;
+  border-radius: 8px;
+}
+
+.road-marking {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    #f39c12 0px,
+    #f39c12 40px,
+    transparent 40px,
+    transparent 80px
+  );
+  transform: translateY(-50%);
+}
+
+/* ========== PARKING ROWS ========== */
+.parking-row {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.left-row {
+  margin-bottom: 20px;
+}
+
+.right-row {
+  margin-top: 20px;
+}
+
+/* ========== PARKING SLOT ========== */
+.parking-slot {
+  width: 180px;
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  border: 4px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 20px 15px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.parking-slot:not(.disabled):hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+}
+
+.parking-slot.booked,
+.parking-slot.occupied {
+  cursor: not-allowed;
+}
+
+.parking-slot.booked:hover,
+.parking-slot.occupied:hover {
+  transform: scale(1);
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.parking-slot.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+/* Slot States */
+.parking-slot.empty {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.parking-slot.booked {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+  animation: pulse 2s infinite;
+}
+
+.parking-slot.occupied {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(245, 87, 108, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(245, 87, 108, 0.8);
+  }
+}
+
+/* Slot đặt bởi mình - Màu xanh dương nổi bật */
+.parking-slot.my-booking {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+  border: 4px solid #fff !important;
+  box-shadow: 0 0 30px rgba(79, 172, 254, 0.8) !important;
+  animation: myBookingPulse 2s infinite !important;
+  cursor: pointer !important;
+}
+
+.parking-slot.my-booking:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 10px 30px rgba(79, 172, 254, 0.6) !important;
+}
+
+@keyframes myBookingPulse {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(79, 172, 254, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(79, 172, 254, 1);
+  }
+}
+
+/* ========== SLOT NUMBER ========== */
+.slot-number {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-weight: 800;
+  font-size: 16px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ========== CAR SHAPE ========== */
+.car-shape {
+  width: 100%;
+  height: 140px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.5s;
+}
+
+.parking-slot.occupied .car-shape,
+.parking-slot.booked .car-shape {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.car-front {
+  width: 80%;
+  height: 20px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  border-radius: 40% 40% 5px 5px;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.car-front::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 20%;
+  width: 60%;
+  height: 8px;
+  background: rgba(52, 152, 219, 0.6);
+  border-radius: 20px;
+}
+
+.car-body {
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  border-radius: 5px;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  border: 2px solid #1a252f;
+}
+
+.car-body::before,
+.car-body::after {
+  content: '';
+  position: absolute;
+  width: 30%;
+  height: 30px;
+  background: rgba(52, 152, 219, 0.4);
+  top: 50%;
+  transform: translateY(-50%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.car-body::before {
+  left: 8px;
+  border-radius: 4px;
+}
+
+.car-body::after {
+  right: 8px;
+  border-radius: 4px;
+}
+
+.car-back {
+  width: 90%;
+  height: 12px;
+  background: #e74c3c;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.6);
+  position: relative;
+}
+
+.car-back::before,
+.car-back::after {
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 6px;
+  background: #c0392b;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 2px;
+}
+
+.car-back::before {
+  left: 10px;
+}
+
+.car-back::after {
+  right: 10px;
+}
+
+/* ========== SLOT INFO ========== */
+.slot-info {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.slot-status {
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  margin-bottom: 5px;
+}
+
+.slot-timer {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 8px;
+  border-radius: 5px;
+  display: inline-block;
+  min-height: 24px;
+}
+
+/* ========== DIALOG ========== */
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  width: 420px;
+  display: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.dialog h3 {
+  color: #2c3e50;
+  font-size: 24px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.dialog p {
+  color: #7f8c8d;
+  margin-bottom: 24px;
+  font-size: 15px;
+}
+
+.datetime-picker {
+  margin-bottom: 20px;
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+}
+
+.input-col {
+  flex: 1;
+}
+
+.input-col label {
+  display: block;
+  color: #2c3e50;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.input-col input[type="date"],
+.input-col input[type="time"] {
+  width: 100%;
+  padding: 14px 12px;
+  border: 2px solid #e1e8ed;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #f8f9fa;
+  color: #2c3e50;
+  font-weight: 600;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.input-col input[type="date"]:focus,
+.input-col input[type="time"]:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.booking-info {
+  background: #f0f4ff;
+  border: 2px solid #d4e1ff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.booking-info span {
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.dialog-buttons button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-cancel {
+  background: #f1f3f5;
+  color: #555;
+}
+
+.btn-cancel:hover {
+  background: #e1e3e5;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1200px) {
+  .parking-lot-container {
+    padding: 30px 20px;
+  }
+  
+  .parking-lot {
+    padding: 30px;
+  }
+  
+  .parking-row {
+    gap: 20px;
+  }
+  
+  .parking-slot {
+    width: 160px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .topbar {
+    padding: 16px 24px;
+  }
+  
+  .logo {
+    font-size: 20px;
+  }
+  
+  .subtitle {
+    font-size: 12px;
+  }
+  
+  .stats {
+    gap: 12px;
+  }
+  
+  .stat-item {
+    padding: 8px 16px;
+    min-width: 70px;
+  }
+  
+  .stat-num {
+    font-size: 24px;
+  }
+  
+  .stat-label {
+    font-size: 10px;
+  }
+  
+  .parking-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .parking-slot {
+    width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+  
+  .topbar-left {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .topbar-right {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .stat-item {
+    flex: 1;
+    min-width: auto;
+  }
+  
+  .logout-btn {
+    width: 100%;
+  }
+  
+  .parking-lot-container {
+    padding: 20px 12px;
+    min-height: auto;
+  }
+  
+  .parking-lot {
+    padding: 20px;
+  }
+  
+  .entrance,
+  .exit {
+    margin-bottom: 20px;
+  }
+  
+  .exit {
+    margin-top: 20px;
+  }
+  
+  .gate-sign {
+    font-size: 16px;
+  }
+  
+  .main-road {
+    height: 50px;
+  }
+  
+  .parking-slot {
+    width: 160px;
+    padding: 16px 12px;
+  }
+  
+  .slot-number {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+  
+  .car-shape {
+    height: 120px;
+  }
+  
+  .slot-status {
+    font-size: 12px;
+  }
+  
+  .slot-timer {
+    font-size: 11px;
+  }
+  
+  .dialog {
+    width: 90%;
+    max-width: 380px;
+    padding: 24px;
+  }
+  
+  .dialog h3 {
+    font-size: 20px;
+  }
+  
+  .dialog p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .input-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .input-col input[type="date"],
+  .input-col input[type="time"] {
+    font-size: 15px;
+    padding: 13px 12px;
+  }
+  
+  .booking-info {
+    padding: 10px 14px;
+  }
+  
+  .booking-info span {
+    font-size: 13px;
+  }
+  
+  .dialog-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .dialog-buttons button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 18px;
+  }
+  
+  .subtitle {
+    font-size: 11px;
+  }
+  
+  .stat-num {
+    font-size: 20px;
+  }
+  
+  .stat-label {
+    font-size: 9px;
+  }
+  
+  .parking-lot {
+    padding: 16px;
+  }
+  
+  .parking-slot {
+    width: 140px;
+  }
+  
+  .car-body {
+    height: 70px;
+  }
+  
+  .dialog {
+    padding: 20px;
+  }
+  
+  .dialog h3 {
+    font-size: 18px;
+  }
+  
+  .input-col label {
+    font-size: 12px;
+  }
+  
+  .input-col input[type="date"],
+  .input-col input[type="time"] {
+    font-size: 14px;
+    padding: 12px 10px;
+  }
+  
+  .dialog-buttons button {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .parking-slot {
+    width: 130px;
+    padding: 12px 10px;
+  }
+  
+  .slot-number {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
