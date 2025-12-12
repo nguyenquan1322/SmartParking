@@ -1,5 +1,21 @@
 let selectedSlot = "";
 let currentUser = localStorage.getItem("currentUser");
+let paymentDialog = document.getElementById("paymentDialog");
+let bookingInfoDialog = null;
+let confirmDialog = null;
+let currentBookingData = null;
+
+// Map slot ID sang display name
+const slotDisplayNames = {
+  "Slot01": "A1",
+  "Slot02": "A2",
+  "Slot03": "A3"
+};
+
+// Hàm chuyển đổi slot ID sang display name
+function getSlotDisplayName(slotId) {
+  return slotDisplayNames[slotId] || slotId;
+}
 
 // Bảo vệ trang - chỉ cho phép user đã đăng nhập
 if (!currentUser) {
@@ -11,9 +27,126 @@ if (currentUser === "admin") {
   window.location.href = "admin.html";
 }
 
+// Khởi tạo sau khi DOM load
+document.addEventListener('DOMContentLoaded', function() {
+  bookingInfoDialog = document.getElementById("bookingInfoDialog");
+  confirmDialog = document.getElementById("confirmDialog");
+});
+
 function logout() {
   localStorage.removeItem("currentUser");
   window.location.href = "login.html";
+}
+
+// ========== NOTIFICATION TOAST ==========
+function showNotification(type, title, message) {
+  let toast = document.getElementById("notificationToast");
+  let icon = document.getElementById("toastIcon");
+  let toastTitle = document.getElementById("toastTitle");
+  let toastMessage = document.getElementById("toastMessage");
+  
+  // Set icon và class
+  icon.className = "toast-icon " + type;
+  
+  switch(type) {
+    case "success":
+      icon.innerText = "✅";
+      break;
+    case "error":
+      icon.innerText = "❌";
+      break;
+    case "warning":
+      icon.innerText = "⚠️";
+      break;
+    case "info":
+      icon.innerText = "ℹ️";
+      break;
+  }
+  
+  toastTitle.innerText = title;
+  toastMessage.innerText = message;
+  
+  // Show toast
+  toast.classList.add("show");
+  
+  // Auto hide sau 4 giây
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 4000);
+}
+
+// ========== BOOKING INFO DIALOG ==========
+function showBookingInfo(slotId, slotData) {
+  currentBookingData = { slotId, ...slotData };
+  
+  // Điền thông tin
+  document.getElementById("infoSlotId").innerText = getSlotDisplayName(slotId);
+  document.getElementById("infoBookedBy").innerText = slotData.booked_by;
+  
+  // Format thời gian
+  let bookedAt = new Date(slotData.booked_at).toLocaleString("vi-VN");
+  let expireTime = new Date(slotData.expire_time).toLocaleString("vi-VN");
+  
+  document.getElementById("infoBookedAt").innerText = bookedAt;
+  document.getElementById("infoExpireTime").innerText = expireTime;
+  
+  // Tính thời gian còn lại
+  let remain = slotData.expire_time - Date.now();
+  let remainText = "";
+  
+  if (remain > 0) {
+    let totalSeconds = Math.floor(remain / 1000);
+    let days = Math.floor(totalSeconds / 86400);
+    let hours = Math.floor((totalSeconds % 86400) / 3600);
+    let minutes = Math.floor((totalSeconds % 3600) / 60);
+    
+    if (days > 0) {
+      remainText = `${days} ngày ${hours} giờ`;
+    } else if (hours > 0) {
+      remainText = `${hours} giờ ${minutes} phút`;
+    } else {
+      remainText = `${minutes} phút`;
+    }
+  } else {
+    remainText = "Đã hết hạn";
+  }
+  
+  document.getElementById("infoRemaining").innerText = remainText;
+  
+  // Số tiền
+  let payment = slotData.payment || 0;
+  document.getElementById("infoPayment").innerText = payment.toLocaleString('vi-VN') + " đ";
+  
+  // Hiển thị dialog
+  bookingInfoDialog.style.display = "block";
+}
+
+function closeBookingInfo() {
+  bookingInfoDialog.style.display = "none";
+  currentBookingData = null;
+}
+
+function confirmCancelBooking() {
+  if (!currentBookingData) return;
+  
+  // Hiển thị confirm dialog
+  document.getElementById("confirmTitle").innerText = "Hủy đặt chỗ";
+  document.getElementById("confirmMessage").innerText = 
+    `Bạn có chắc chắn muốn hủy đặt chỗ ${getSlotDisplayName(currentBookingData.slotId)}?\n\nSố tiền ${(currentBookingData.payment || 0).toLocaleString('vi-VN')} đ sẽ không được hoàn lại.`;
+  
+  confirmDialog.style.display = "block";
+  
+  // Xử lý nút Yes
+  document.getElementById("confirmYes").onclick = function() {
+    confirmDialog.style.display = "none";
+    bookingInfoDialog.style.display = "none";
+    cancelMyBooking(currentBookingData.slotId);
+  };
+  
+  // Xử lý nút No
+  document.getElementById("confirmNo").onclick = function() {
+    confirmDialog.style.display = "none";
+  };
 }
 
 function openBooking(slot) {
@@ -25,7 +158,7 @@ function openBooking(slot) {
     
     // Nếu slot đang có xe
     if (slotData && slotData.has_car === true) {
-      alert("⚠️ Chỗ này đang có xe đậu!\nVui lòng chọn chỗ khác.");
+      showNotification("warning", "Không thể đặt chỗ", "Chỗ này đang có xe đậu! Vui lòng chọn chỗ khác.");
       return;
     }
     
@@ -33,13 +166,11 @@ function openBooking(slot) {
     if (slotData && slotData.status === "booked") {
       // Kiểm tra xem có phải booking của mình không
       if (slotData.booked_by === currentUser) {
-        // Cho phép hủy booking của mình
-        if (confirm("🅿️ Bạn đã đặt chỗ này rồi.\n\nBạn muốn HỦY đặt chỗ không?")) {
-          cancelMyBooking(slot);
-        }
+        // Hiển thị thông tin booking của mình
+        showBookingInfo(slot, slotData);
       } else {
         // Không cho đặt chỗ của người khác
-        alert("⚠️ Chỗ này đã có người đặt rồi!\nVui lòng chọn chỗ khác.");
+        showNotification("warning", "Không thể đặt chỗ", "Chỗ này đã có người đặt rồi! Vui lòng chọn chỗ khác.");
       }
       return;
     }
@@ -73,13 +204,14 @@ function cancelMyBooking(slotId) {
     expire_time: null,
     book_date: null,
     book_time: null,
-    booked_at: null
+    booked_at: null,
+    payment: null
   })
   .then(() => {
-    alert("✅ Đã hủy đặt chỗ thành công!");
+    showNotification("success", "Hủy thành công", "Đã hủy đặt chỗ thành công!");
   })
   .catch(err => {
-    alert("❌ Lỗi: " + err.message);
+    showNotification("error", "Lỗi", err.message);
   });
 }
 
@@ -145,16 +277,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // GỬI LỆNH BOOK CHO ESP
-function confirmBooking() {
+// TÍNH TIỀN THEO QUY TẮC
+function calculatePayment() {
   let selectedDate = document.getElementById('bookDate').value;
   let selectedTime = document.getElementById('bookTime').value;
   
   if (!selectedDate || !selectedTime) {
-    alert('⚠️ Vui lòng chọn đầy đủ ngày và giờ!');
-    return;
+    return null;
   }
   
-  // Parse ngày và giờ
   let [year, month, day] = selectedDate.split('-').map(Number);
   let [hours, minutes] = selectedTime.split(':').map(Number);
   
@@ -162,31 +293,125 @@ function confirmBooking() {
   let now = new Date();
   
   if (bookUntil <= now) {
-    alert('⚠️ Thời gian đặt phải sau thời gian hiện tại!');
+    return null;
+  }
+  
+  // Tính số milliseconds
+  let durationMs = bookUntil.getTime() - now.getTime();
+  
+  // Chuyển sang giờ và làm tròn LÊN
+  let durationHours = Math.ceil(durationMs / (1000 * 60 * 60));
+  
+  // Công thức: 5,000 + (số giờ × 3,000)
+  const BASE_FEE = 5000;
+  const HOURLY_RATE = 3000;
+  
+  let hourlyFee = durationHours * HOURLY_RATE;
+  let totalFee = BASE_FEE + hourlyFee;
+  
+  return {
+    hours: durationHours,
+    hourlyFee: hourlyFee,
+    totalFee: totalFee,
+    expireTime: bookUntil.getTime(),
+    displayDate: day.toString().padStart(2, '0') + '/' + 
+                 month.toString().padStart(2, '0') + '/' + 
+                 year,
+    displayTime: hours.toString().padStart(2, '0') + ':' + 
+                 minutes.toString().padStart(2, '0')
+  };
+}
+
+function confirmBooking() {
+  let selectedDate = document.getElementById('bookDate').value;
+  let selectedTime = document.getElementById('bookTime').value;
+  
+  if (!selectedDate || !selectedTime) {
+    showNotification("warning", "Thiếu thông tin", "Vui lòng chọn đầy đủ ngày và giờ!");
     return;
   }
   
-  let expireTime = bookUntil.getTime();
+  let payment = calculatePayment();
   
-  // Format ngày giờ hiển thị
-  let displayDate = day.toString().padStart(2, '0') + '/' + 
-                    month.toString().padStart(2, '0') + '/' + 
-                    year;
-  let displayTime = hours.toString().padStart(2, '0') + ':' + 
-                    minutes.toString().padStart(2, '0');
+  if (!payment) {
+    showNotification("warning", "Thời gian không hợp lệ", "Thời gian đặt phải sau thời gian hiện tại!");
+    return;
+  }
+  
+  // Hiển thị thông tin thanh toán
+  document.getElementById('paymentDuration').innerText = payment.hours + ' giờ';
+  document.getElementById('paymentHourlyFee').innerText = payment.hourlyFee.toLocaleString('vi-VN') + ' đ';
+  document.getElementById('paymentTotal').innerText = payment.totalFee.toLocaleString('vi-VN') + ' đ';
+  
+  // Ẩn booking dialog, hiện payment dialog
+  bookDialog.style.display = "none";
+  paymentDialog.style.display = "block";
+  
+  // Reset trạng thái
+  document.getElementById('paymentProcessing').classList.add('hidden');
+  document.getElementById('paymentSuccess').classList.add('hidden');
+  paymentDialog.querySelectorAll('.dialog-buttons')[0].style.display = 'flex';
+}
 
+function closePaymentDialog() {
+  paymentDialog.style.display = "none";
+  // Mở lại booking dialog nếu muốn sửa
+  bookDialog.style.display = "block";
+}
+
+function processPayment() {
+  // Ẩn buttons
+  paymentDialog.querySelectorAll('.dialog-buttons')[0].style.display = 'none';
+  
+  // Hiện processing
+  document.getElementById('paymentProcessing').classList.remove('hidden');
+  
+  // Fake processing 2-3 giây
+  setTimeout(() => {
+    // Ẩn processing
+    document.getElementById('paymentProcessing').classList.add('hidden');
+    
+    // Hiện success
+    document.getElementById('paymentSuccess').classList.remove('hidden');
+    
+    // Sau 2 giây nữa thì hoàn tất booking
+    setTimeout(() => {
+      completeBooking();
+    }, 2000);
+  }, 2500);
+}
+
+function completeBooking() {
+  let payment = calculatePayment();
+  
+  if (!payment) {
+    showNotification("error", "Lỗi", "Không thể hoàn tất đặt chỗ");
+    paymentDialog.style.display = "none";
+    return;
+  }
+  
+  let selectedDate = document.getElementById('bookDate').value;
+  let selectedTime = document.getElementById('bookTime').value;
+  
   // Gửi lệnh booking xuống ESP32
   db.ref("Slots/" + selectedSlot).update({
     status: "booked",
     booked_by: currentUser,
-    expire_time: expireTime,
+    expire_time: payment.expireTime,
     book_date: selectedDate,
     book_time: selectedTime,
-    booked_at: Date.now()
+    booked_at: Date.now(),
+    payment: payment.totalFee
+  })
+  .then(() => {
+    showNotification("success", "Đặt chỗ thành công", 
+      `Đã thanh toán ${payment.totalFee.toLocaleString('vi-VN')} đ - Đặt đến ${payment.displayDate} ${payment.displayTime}`);
+    paymentDialog.style.display = "none";
+  })
+  .catch(err => {
+    showNotification("error", "Lỗi", err.message);
+    paymentDialog.style.display = "none";
   });
-
-  alert("✅ Đã đặt chỗ đến:\n📅 " + displayDate + " ⏰ " + displayTime);
-  closeDialog();
 }
 
 // AUTO CHECK EXPIRED BOOKINGS
@@ -209,7 +434,8 @@ setInterval(() => {
           expire_time: null,
           book_date: null,
           book_time: null,
-          booked_at: null
+          booked_at: null,
+          payment: null
         });
       }
     });

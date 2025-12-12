@@ -90,6 +90,13 @@ function showStatus(type, message) {
   statusBox.innerText = message;
 }
 
+// ========== CẬP NHẬT THỐNG KÊ ==========
+function updateStats(bookingCount, revenue) {
+  document.getElementById("totalRevenue").innerText = revenue.toLocaleString('vi-VN') + " đ";
+  document.getElementById("totalBookings").innerText = bookingCount;
+  document.getElementById("totalCards").innerText = allCards.length;
+}
+
 // ========== TẢI DANH SÁCH THẺ ==========
 function loadAllCards() {
   db.ref("RegisteredCards").on("value", snap => {
@@ -98,6 +105,7 @@ function loadAllCards() {
     
     if (!data) {
       cardsList.innerHTML = '<div class="empty-state">📭 Chưa có thẻ nào được đăng ký</div>';
+      document.getElementById("totalCards").innerText = "0";
       return;
     }
 
@@ -109,6 +117,9 @@ function loadAllCards() {
     allCards.sort((a, b) => b.registered_at - a.registered_at);
 
     displayCards(allCards);
+    
+    // Cập nhật số lượng thẻ
+    document.getElementById("totalCards").innerText = allCards.length;
   });
 }
 
@@ -204,10 +215,13 @@ function loadBookings() {
     
     if (!slots) {
       bookingsList.innerHTML = '<div class="empty-state">📭 Chưa có booking nào</div>';
+      updateStats(0, 0);
       return;
     }
     
     let bookings = [];
+    let totalRevenue = 0;
+    
     Object.keys(slots).forEach(slotId => {
       let slot = slots[slotId];
       if (slot.status === "booked") {
@@ -215,8 +229,15 @@ function loadBookings() {
           slotId: slotId,
           ...slot
         });
+        // Cộng dồn doanh thu
+        if (slot.payment) {
+          totalRevenue += slot.payment;
+        }
       }
     });
+    
+    // Cập nhật stats
+    updateStats(bookings.length, totalRevenue);
     
     if (bookings.length === 0) {
       bookingsList.innerHTML = '<div class="empty-state">📭 Chưa có booking nào</div>';
@@ -251,6 +272,11 @@ function loadBookings() {
         remainText = "Đã hết hạn";
       }
       
+      // Hiển thị tiền
+      let paymentText = booking.payment 
+        ? `💰 ${booking.payment.toLocaleString('vi-VN')} đ` 
+        : "💰 Chưa có thông tin";
+      
       html += `
         <div class="booking-item">
           <div class="booking-info-left">
@@ -259,7 +285,8 @@ function loadBookings() {
             <div class="booking-time">
               📅 Đặt lúc: ${bookedTime}<br>
               ⏰ Đến: ${expireDate}<br>
-              ⏱️ Còn lại: <strong>${remainText}</strong>
+              ⏱️ Còn lại: <strong>${remainText}</strong><br>
+              ${paymentText}
             </div>
           </div>
           <div class="booking-actions">
@@ -283,7 +310,8 @@ function cancelBooking(slotId, userName) {
       expire_time: null,
       book_date: null,
       book_time: null,
-      booked_at: null
+      booked_at: null,
+      payment: null
     })
     .then(() => {
       alert("✅ Đã hủy booking!");

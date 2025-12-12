@@ -171,6 +171,137 @@
   </div>
 </div>
 
+<!-- PAYMENT DIALOG -->
+<div id="paymentDialog" class="dialog payment-dialog">
+  <h3>💳 Thanh toán</h3>
+  
+  <div class="payment-details">
+    <div class="payment-row">
+      <span class="label">Phí cơ bản:</span>
+      <span class="value">5,000 đ</span>
+    </div>
+    <div class="payment-row">
+      <span class="label">Thời gian đỗ:</span>
+      <span class="value" id="paymentDuration">0 giờ</span>
+    </div>
+    <div class="payment-row">
+      <span class="label">Phí theo giờ:</span>
+      <span class="value" id="paymentHourlyFee">0 đ</span>
+    </div>
+    <div class="payment-divider"></div>
+    <div class="payment-row total">
+      <span class="label">Tổng cộng:</span>
+      <span class="value" id="paymentTotal">5,000 đ</span>
+    </div>
+  </div>
+
+  <div class="qr-container">
+    <div class="qr-label">Quét mã QR để thanh toán</div>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SmartParking-Payment" 
+         alt="QR Code" class="qr-code">
+    <div class="qr-note">Quét mã bằng ứng dụng ngân hàng</div>
+  </div>
+
+  <div id="paymentProcessing" class="payment-processing hidden">
+    <div class="spinner"></div>
+    <p>Đang xử lý thanh toán...</p>
+  </div>
+
+  <div id="paymentSuccess" class="payment-success hidden">
+    <div class="success-icon">✅</div>
+    <p>Thanh toán thành công!</p>
+    <p class="success-note">Đang xác nhận đặt chỗ...</p>
+  </div>
+
+  <div class="dialog-buttons">
+    <button class="btn-confirm" onclick="processPayment()">Tôi đã thanh toán</button>
+    <button class="btn-cancel" onclick="closePaymentDialog()">Hủy</button>
+  </div>
+</div>
+
+<!-- BOOKING INFO DIALOG -->
+<div id="bookingInfoDialog" class="dialog booking-info-dialog">
+  <div class="dialog-header">
+    <h3>🅿️ Thông tin đặt chỗ</h3>
+    <button class="close-btn" onclick="closeBookingInfo()">✕</button>
+  </div>
+  
+  <div class="booking-details">
+    <div class="booking-detail-row">
+      <div class="detail-icon">📍</div>
+      <div class="detail-content">
+        <div class="detail-label">Vị trí</div>
+        <div class="detail-value" id="infoSlotId">A1</div>
+      </div>
+    </div>
+    
+    <div class="booking-detail-row">
+      <div class="detail-icon">👤</div>
+      <div class="detail-content">
+        <div class="detail-label">Người đặt</div>
+        <div class="detail-value" id="infoBookedBy">user123</div>
+      </div>
+    </div>
+    
+    <div class="booking-detail-row">
+      <div class="detail-icon">📅</div>
+      <div class="detail-content">
+        <div class="detail-label">Đặt lúc</div>
+        <div class="detail-value" id="infoBookedAt">12/12/2025 10:00</div>
+      </div>
+    </div>
+    
+    <div class="booking-detail-row">
+      <div class="detail-icon">⏰</div>
+      <div class="detail-content">
+        <div class="detail-label">Hết hạn</div>
+        <div class="detail-value" id="infoExpireTime">12/12/2025 18:00</div>
+      </div>
+    </div>
+    
+    <div class="booking-detail-row">
+      <div class="detail-icon">⏱️</div>
+      <div class="detail-content">
+        <div class="detail-label">Thời gian còn lại</div>
+        <div class="detail-value remaining" id="infoRemaining">5 giờ 30 phút</div>
+      </div>
+    </div>
+    
+    <div class="booking-detail-row highlight">
+      <div class="detail-icon">💰</div>
+      <div class="detail-content">
+        <div class="detail-label">Đã thanh toán</div>
+        <div class="detail-value price" id="infoPayment">14,000 đ</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="dialog-buttons">
+    <button class="btn-danger" onclick="confirmCancelBooking()">🗑️ Hủy đặt chỗ</button>
+    <button class="btn-cancel" onclick="closeBookingInfo()">Đóng</button>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div id="confirmDialog" class="dialog confirm-dialog">
+  <div class="confirm-icon">⚠️</div>
+  <h3 id="confirmTitle">Xác nhận</h3>
+  <p id="confirmMessage">Bạn có chắc chắn muốn thực hiện thao tác này?</p>
+  <div class="dialog-buttons">
+    <button class="btn-danger" id="confirmYes">Xác nhận</button>
+    <button class="btn-cancel" id="confirmNo">Hủy</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION TOAST -->
+<div id="notificationToast" class="notification-toast">
+  <div class="toast-icon" id="toastIcon">✅</div>
+  <div class="toast-content">
+    <div class="toast-title" id="toastTitle">Thành công</div>
+    <div class="toast-message" id="toastMessage">Thao tác đã được thực hiện</div>
+  </div>
+</div>
+
 <script src="firebase-config.js"></script>
 <script src="dashboard.js"></script>
 
